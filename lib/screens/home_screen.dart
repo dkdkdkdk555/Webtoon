@@ -30,13 +30,19 @@ class HomeScreen extends StatelessWidget {
         builder: (context, snapshot){
             // snapshot을 이용하면 Future의 상태를 알 수 있다.
             if(snapshot.hasData){
-              return ListView.builder(
+              return ListView.separated( 
+                // ListView.builder 는 필요할때 아이템을 로드해 메모리를 절약한다.
+                // ListView.separated 는 'separatorBuilder' 라는 필수 인자를 하나 더 받아 리스트를 구분 시켜줄 위젯을 하나 더 받는다.
                 scrollDirection: Axis.horizontal,
                 itemCount:snapshot.data!.length,
                 itemBuilder: (context, index) {
+
                   var webtoon = snapshot.data![index];
                   return Text(webtoon.title);
                 },
+                separatorBuilder:(context, index) => const SizedBox(
+                  width: 20,
+                ),
               );
             } 
             return const Center(
