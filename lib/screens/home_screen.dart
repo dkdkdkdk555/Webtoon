@@ -2,31 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:webtoon/models/webtoon_model.dart';
 import 'package:webtoon/services/api_service.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  HomeScreen({super.key});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-
-  List<WebtoonModel> webtoons = [];
-  bool isLoading = true;
-
-  void waitForWebToons() async{
-    webtoons = await ApiService.getTodaysToons();
-    isLoading = false;
-    setState(() {
-      
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    waitForWebToons();
-  }
+  Future<List<WebtoonModel>> webtoons = ApiService.getTodaysToons();
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +21,19 @@ class _HomeScreenState extends State<HomeScreen> {
             fontWeight: FontWeight.w600,
             ),
         ),
+      ),
+      body: FutureBuilder(/*
+        StatefullWidget을 고집할 필요 없다.
+        FutureBuilder 를 통하면 State 없이도 api 의 리턴 결과를 동적으로 반영할 수 있다.
+      */
+        future: webtoons, // FutureBuilder 가 await 해준다.
+        builder: (context, snapshot){
+            // snapshoㅅ을 이용하면 Future의 상태를 알 수 있다.
+            if(snapshot.hasData){
+              return const Text("There is data!");
+            } 
+            return const Text("Loading..");
+        },
       ),
     );
   }
