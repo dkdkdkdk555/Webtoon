@@ -19,7 +19,9 @@ class Webtoon extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => 
             DetailScreen( // StateLessWidget을 받을 수 없기에 이를 route로 감싼다(MaterialPageRoute)
-              title: title, thumb: thumb, id: id)));
+              title: title, thumb: thumb, id: id),
+            fullscreenDialog: true,
+          ));
       },
       child: Column(
                     children: [
