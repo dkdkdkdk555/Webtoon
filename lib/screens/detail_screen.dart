@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webtoon/models/webtoon_detail_model.dart';
 import 'package:webtoon/models/webtoon_episode_model.dart';
 import 'package:webtoon/services/api_service.dart';
@@ -25,12 +26,42 @@ class _DetailScreenState extends State<DetailScreen> {
    */
   late Future<WebtoonDetailModel> webtoon;
   late Future<List<WebtoonEpisodeModel>> episodes;
+  late SharedPreferences prefs;
+  bool isLiked = false;
+
+  Future initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    final likedToons = prefs.getStringList('likeToons');
+    if(likedToons != null){ 
+      if(likedToons.contains(widget.id) == true){
+        isLiked = true;
+      }
+    } else {
+      prefs.setStringList('likedToons', []);
+    }
+  }
 
   @override
   void initState() {// 해당 상테일대 프로퍼티가 초기화 되기 때문에 이 안에서 api 호출하는 로직이 있는거다.
     super.initState();
     webtoon = ApiService.getToonById(widget.id);
     episodes = ApiService.getLatestEpisodesById(widget.id);
+    initPrefs();
+  }
+
+  onHeartTap() async {
+    final likedToons = prefs.getStringList('likeToons');
+    if(likedToons != null){
+      if(isLiked){
+        likedToons.remove(widget.id);
+      } else {
+        likedToons.add(widget.id);
+      }
+      await prefs.setStringList('likeToons', likedToons);
+      setState(() {
+        isLiked = !isLiked;
+      });
+    }
   }
 
   @override
@@ -45,15 +76,17 @@ class _DetailScreenState extends State<DetailScreen> {
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
-            
             ),
         ),
         actions: [
           IconButton(
-            onPressed: (){},
-            icon: const Padding(
-              padding: EdgeInsets.only(right: 20.0),
-              child: Icon(Icons.favorite_outline,),
+            onPressed: onHeartTap,
+            icon: Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: Icon(
+                isLiked ? Icons.favorite : 
+                Icons.favorite_outline,
+              ),
             )
           ),
         ],
