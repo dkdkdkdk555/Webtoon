@@ -32,10 +32,15 @@ class _DetailScreenState extends State<DetailScreen> {
     episodes = ApiService.getLatestEpisodesById(widget.id);
   }
 
+  onButtonTap(){
+    final url = Uri.parse("https://gooogle.com");
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 18, 4, 4),
       appBar: AppBar(
         elevation: 2, // 앱바 경계선의 음영?
         backgroundColor: Colors.white,
