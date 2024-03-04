@@ -38,6 +38,7 @@ dependencies:
   
   # A Flutter plugin for launching a URL.
   url_launcher: ^6.0.31
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

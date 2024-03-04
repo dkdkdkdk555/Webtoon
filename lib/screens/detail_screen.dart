@@ -40,12 +40,23 @@ class _DetailScreenState extends State<DetailScreen> {
         elevation: 2, // 앱바 경계선의 음영?
         backgroundColor: Colors.white,
         foregroundColor: Colors.green,
+
         title: Text(widget.title,
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
+            
             ),
         ),
+        actions: [
+          IconButton(
+            onPressed: (){},
+            icon: const Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: Icon(Icons.favorite_outline,),
+            )
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
