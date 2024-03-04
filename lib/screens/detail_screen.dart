@@ -26,7 +26,7 @@ class _DetailScreenState extends State<DetailScreen> {
   late Future<List<WebtoonEpisodeModel>> episodes;
 
   @override
-  void initState() {
+  void initState() {// 해당 상테일대 프로퍼티가 초기화 되기 때문에 이 안에서 api 호출하는 로직이 있는거다.
     super.initState();
     webtoon = ApiService.getToonById(widget.id);
     episodes = ApiService.getLatestEpisodesById(widget.id);
@@ -47,78 +47,114 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(
-            height: 50,
-          ),
-          Row(
-
-            mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(50),
+          child: Column(
             children: [
-              Hero(
-                tag: widget.id,
-                child: Container(
-                  width: 250,
-                  clipBehavior: Clip.hardEdge, // clipBehavior는 자식이 부모 영역을 침범하는 속성
-                  decoration: BoxDecoration( 
-                    borderRadius: BorderRadius.circular(10), // clipbehavior를 적용해야만 적용됨
-                    boxShadow: [ // 그림자 효과
-                      BoxShadow(
-                        blurRadius: 10,
-                        offset: const Offset(10, 0),
-                        color: Colors.black.withOpacity(0.5),
+              Row(
+          
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Hero(
+                    tag: widget.id,
+                    child: Container(
+                      width: 250,
+                      clipBehavior: Clip.hardEdge, // clipBehavior는 자식이 부모 영역을 침범하는 속성
+                      decoration: BoxDecoration( 
+                        borderRadius: BorderRadius.circular(10), // clipbehavior를 적용해야만 적용됨
+                        boxShadow: [ // 그림자 효과
+                          BoxShadow(
+                            blurRadius: 10,
+                            offset: const Offset(10, 0),
+                            color: Colors.black.withOpacity(0.5),
+                          )
+                        ]
+                      ),
+                      child: Image.network(
+                        widget.thumb,
+                        headers: const { 
+                          // 밑에는 안드로이드 나 IOS 를 에뮬레이터를 사용할 경우 CORS 문제를 해결하기 위해 넣어야 하는 헤더 내용이다.
+                          // 'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+                          // 'Referer': 'https://comic.naver.com',
+                    
+                          // chrome 에서 할때는 
+                          // flutter run -d chrome --web-renderer html
+                          // 명령어로 실행하여 해결함. HTML 랜더링 엔진을 사용하도록 설정하는 것
+                        },
                       )
-                    ]
+                    ),
                   ),
-                  child: Image.network(
-                    widget.thumb,
-                    headers: const { 
-                      // 밑에는 안드로이드 나 IOS 를 에뮬레이터를 사용할 경우 CORS 문제를 해결하기 위해 넣어야 하는 헤더 내용이다.
-                      // 'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
-                      // 'Referer': 'https://comic.naver.com',
-                
-                      // chrome 에서 할때는 
-                      // flutter run -d chrome --web-renderer html
-                      // 명령어로 실행하여 해결함. HTML 랜더링 엔진을 사용하도록 설정하는 것
-                    },
-                  )
-                ),
+                ],
               ),
+              const SizedBox(height:25),
+              FutureBuilder(
+                  future: webtoon,
+                  builder: (context, snapshot) {
+                    if(snapshot.hasData){
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(snapshot.data!.about,
+                            style: const TextStyle(fontSize: 16,),
+                          ),
+                          const SizedBox(height: 15,),
+                          Text(
+                            '${snapshot.data!.genre} / ${snapshot.data!.age}',
+                            style: const TextStyle(fontSize: 16,),
+                          ),
+                          
+                        ],
+                      );
+                    }
+                    return const Text("...");
+                  },
+                ),
+              const SizedBox(
+                height: 25,
+              ),
+              FutureBuilder(
+                future: episodes,
+                builder: (context, snapshot) {
+                  if(snapshot.hasData){
+                    return Column(
+                      children: [
+                        for(var episode in snapshot.data!)
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 7),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.green.shade300,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                              horizontal: 20,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children:[
+                              Text(episode.title,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const Icon(Icons.chevron_left_rounded,
+                                color: Colors.white,
+                              )
+                            ]),
+                          ),
+                        )
+                      ],
+                    );
+                  }
+                  return Container();
+                }
+              )
             ],
           ),
-          const SizedBox(height:10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50,),
-            child: FutureBuilder(
-              future: webtoon,
-              builder: (context, snapshot) {
-                if(snapshot.hasData){
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(snapshot.data!.about,
-                          style: const TextStyle(fontSize: 16,),
-                        ),
-                        const SizedBox(height: 15,),
-                        Text(
-                          '${snapshot.data!.genre} / ${snapshot.data!.age}',
-                          style: const TextStyle(fontSize: 16,),
-                        ),
-                        
-                      ],
-                    ),
-                  );
-                }
-                return const Text("...");
-              },
-            ),
-          )
-        ],
+        ),
       ),
     );
   }
