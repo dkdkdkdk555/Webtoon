@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:webtoon/models/webtoon_detail_model.dart';
 import 'package:webtoon/models/webtoon_episode_model.dart';
 import 'package:webtoon/services/api_service.dart';
+import 'package:webtoon/widget/episode_widget.dart';
 
 class DetailScreen extends StatefulWidget {
   final String title, thumb, id;
@@ -32,15 +33,9 @@ class _DetailScreenState extends State<DetailScreen> {
     episodes = ApiService.getLatestEpisodesById(widget.id);
   }
 
-  onButtonTap(){
-    final url = Uri.parse("https://gooogle.com");
-    
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 18, 4, 4),
       appBar: AppBar(
         elevation: 2, // 앱바 경계선의 음영?
         backgroundColor: Colors.white,
@@ -58,7 +53,6 @@ class _DetailScreenState extends State<DetailScreen> {
           child: Column(
             children: [
               Row(
-          
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Hero(
@@ -125,31 +119,9 @@ class _DetailScreenState extends State<DetailScreen> {
                     return Column(
                       children: [
                         for(var episode in snapshot.data!)
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 7),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.green.shade300,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 20,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children:[
-                              Text(episode.title,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              const Icon(Icons.chevron_left_rounded,
-                                color: Colors.white,
-                              )
-                            ]),
-                          ),
+                        Episode(
+                          episode: episode,
+                          webtoonId: widget.id,
                         )
                       ],
                     );
